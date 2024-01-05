@@ -1,17 +1,18 @@
 package com.spring.creamBank.account.exception;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class AccountNotFount  extends HeadException{
+public class AccountNotFound extends HeadException{
 
     private static final String MESSAGE = "계좌가 존재하지 않습니다.";
 
-    public AccountNotFount(String message) {
+    public AccountNotFound() {
         super(MESSAGE);
     }
 
-    public AccountNotFount(String message, Throwable cause) {
+    public AccountNotFound(String message) {
+        super(MESSAGE);
+    }
+
+    public AccountNotFound(String message, Throwable cause) {
         super(MESSAGE, cause);
     }
 

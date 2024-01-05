@@ -1,25 +1,25 @@
 package com.spring.creamBank.account.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @ToString
 @Getter
-public class AccountUpdate {
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class AccountDeposit {
 
     @NotBlank(message = "계좌번호를 입력해주세요.")
-    private final String accountNumber;
+    private String accountNumber;
     @NotBlank(message = "예금주명을 입력해주세요.")
-    private final String owner;
-
-    private final Long balance;
+    private String owner;
+    @NotBlank(message = "예금금액을 입력해주세요.")
+    private Long depositAmount;
 
     @Builder
-    public AccountUpdate(String accountNumber, String owner, Long balance) {
+    public AccountDeposit(String accountNumber, String owner, Long depositAmount) {
         this.accountNumber = accountNumber;
         this.owner = owner;
-        this.balance = balance;
+        this.depositAmount = depositAmount;
     }
 }

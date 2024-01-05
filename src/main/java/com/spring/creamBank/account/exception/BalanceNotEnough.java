@@ -1,21 +1,22 @@
 package com.spring.creamBank.account.exception;
 
-import java.util.HashMap;
-import java.util.Map;
+public class BalanceNotEnough extends HeadException{
 
-public class AccountNotFount  extends HeadException{
+    private static final String MESSAGE = "잔고가 부족합니다.";
 
-    private static final String MESSAGE = "계좌가 존재하지 않습니다.";
-
-    public AccountNotFount(String message) {
+    public BalanceNotEnough() {
         super(MESSAGE);
     }
 
-    public AccountNotFount(String message, Throwable cause) {
+    public BalanceNotEnough(String message) {
+        super(MESSAGE);
+    }
+
+    public BalanceNotEnough(String message, Throwable cause) {
         super(MESSAGE, cause);
     }
 
     @Override
-    public int getStatusCode() { return 404;}
+    public int getStatusCode() { return 403;}
 
 }

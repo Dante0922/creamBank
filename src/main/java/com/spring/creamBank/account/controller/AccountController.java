@@ -1,43 +1,51 @@
 package com.spring.creamBank.account.controller;
 
-import com.spring.creamBank.account.domain.Account;
-import com.spring.creamBank.account.dto.AccountCreate;
-import com.spring.creamBank.account.dto.AccountUpdate;
+import com.spring.creamBank.account.dto.*;
 import com.spring.creamBank.account.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/accounts")
 public class AccountController {
 
     private final AccountService accountService;
 
 
-    @GetMapping("/accounts")
-    public List<Account> getAccountList() {
-        return accountService.getAccountList();
+    @GetMapping
+    public List<AccountResponse> findAccountList() {
+        return accountService.findAccountList();
     }
 
-    @PostMapping("/accounts")
-    public String createAccount(@RequestBody AccountCreate request) {
-
+    @PostMapping
+    public AccountResponse createAccount(@RequestBody AccountCreate request) {
         return accountService.create(request);
     }
 
-    @GetMapping("/accounts/{accountId}")
-    public Optional<Account> getAccount(@PathVariable Long accountId) {
-        return accountService.getAccount(accountId);
+    @GetMapping("/{accountNumber}")
+    public AccountResponse findAccount(@PathVariable("accountNumber") String accountNumber) {
+        return accountService.findAccount(accountNumber);
     }
 
-    @PatchMapping("/accounts/{accountId}")
-    public String deposit(@PathVariable Long accountId, @RequestBody AccountUpdate request){
-        AccountService.deposit(accountId, request)
-
+    @PatchMapping("/{accountNumber}/deposit")
+    public AccountResponse deposit(@PathVariable("accountNumber") String accountNumber, @RequestBody AccountDeposit request){
+        /* AccountDeposit 객체에 이미 accountNumber를 가지고 있는데,,
+        * 굳이 pathVariable, API경로르 위해 또 받아야 하나??*/
+        return accountService.deposit(request);
     }
+    @PatchMapping("/{accountNumber}/withdrawal")
+    public AccountResponse withdraw(@PathVariable("accountNumber") String accountNumber, @RequestBody AccountWithdrawal request){
+        return accountService.withdraw(request);
+    }
+
+    @PostMapping("/{accountNumber}/transfer")
+    public AccountResponse transfer(@PathVariable("accountNumber") String accountNumber, @RequestBody AccountTransfer accountTransfer){
+        return accountService.transfer(accountTransfer);
+    }
+
 }
