@@ -24,7 +24,7 @@ public class AccountController {
 
     @PostMapping
     public AccountResponse createAccount(@RequestBody AccountCreate request) {
-        return accountService.create(request);
+        return accountService.createAccount(request);
     }
 
     @GetMapping("/{accountNumber}")

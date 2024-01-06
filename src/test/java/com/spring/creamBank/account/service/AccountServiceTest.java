@@ -62,7 +62,7 @@ class AccountServiceTest {
                 .balance(50000L)
                 .build();
         //when
-        AccountResponse accountResponse = accountService.create(acc);
+        AccountResponse accountResponse = accountService.createAccount(acc);
         //then
         AccountResponse correctResult = accountService.findAccount(accountResponse.getAccountNumber());
 
@@ -89,8 +89,8 @@ class AccountServiceTest {
                 .owner("크림")
                 .build();
         //when
-        AccountResponse accountResponse1 = accountService.create(acc1);
-        AccountResponse accountResponse2 = accountService.create(acc2);
+        AccountResponse accountResponse1 = accountService.createAccount(acc1);
+        AccountResponse accountResponse2 = accountService.createAccount(acc2);
         //then
         assertEquals("0103332",accountResponse1.getAccountNumber());
         assertEquals("크림", accountResponse2.getOwner());
@@ -112,7 +112,7 @@ class AccountServiceTest {
                 .depositAmount(5000L)
                 .build();
         //when
-        AccountResponse accountResponse = accountService.create(acc);
+        AccountResponse accountResponse = accountService.createAccount(acc);
         accountService.deposit(depositInfo);
         //then
         assertEquals(8000L, accountService.findAccount(accountResponse.getAccountNumber()).getBalance());
@@ -138,7 +138,7 @@ class AccountServiceTest {
                 .build();
 
         //when
-        AccountResponse accountResponse = accountService.create(acc);
+        AccountResponse accountResponse = accountService.createAccount(acc);
         accountService.withdraw(depositInfo1);
         //then
         assertEquals(1000L, accountService.findAccount(accountResponse.getAccountNumber()).getBalance());

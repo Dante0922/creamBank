@@ -32,7 +32,7 @@ public class AccountService {
         return new  AccountResponse(account);
     }
 
-    public AccountResponse create(AccountCreate accountCreate) {
+    public AccountResponse createAccount(AccountCreate accountCreate) {
         Account acc = Account.builder()
                 .accountNumber(accountCreate.getAccountNumber())
                 .owner(accountCreate.getOwner())
