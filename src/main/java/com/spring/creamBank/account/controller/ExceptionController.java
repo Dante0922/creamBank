@@ -21,7 +21,7 @@ public class ExceptionController {
     @ResponseBody
     public ErrorResponse invaildRequestHandler(MethodArgumentNotValidException e){
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("404")
+                .code("400")
                 .message("잘못된 요청입니다.")
                 .validation(new HashMap<>())
                 .build();

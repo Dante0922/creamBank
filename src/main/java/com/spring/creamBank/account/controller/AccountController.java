@@ -2,6 +2,7 @@ package com.spring.creamBank.account.controller;
 
 import com.spring.creamBank.account.dto.*;
 import com.spring.creamBank.account.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class AccountController {
     }
 
     @PostMapping
-    public AccountResponse createAccount(@RequestBody AccountCreate request) {
+    public AccountResponse createAccount(@RequestBody @Valid AccountCreate request) {
         return accountService.createAccount(request);
     }
 
@@ -33,18 +34,18 @@ public class AccountController {
     }
 
     @PatchMapping("/{accountNumber}/deposit")
-    public AccountResponse deposit(@PathVariable("accountNumber") String accountNumber, @RequestBody AccountDeposit request){
+    public AccountResponse deposit(@PathVariable("accountNumber") String accountNumber, @RequestBody @Valid AccountDeposit request){
         /* AccountDeposit 객체에 이미 accountNumber를 가지고 있는데,,
         * 굳이 pathVariable, API경로르 위해 또 받아야 하나??*/
         return accountService.deposit(request);
     }
     @PatchMapping("/{accountNumber}/withdrawal")
-    public AccountResponse withdraw(@PathVariable("accountNumber") String accountNumber, @RequestBody AccountWithdrawal request){
+    public AccountResponse withdraw(@PathVariable("accountNumber") String accountNumber, @RequestBody @Valid AccountWithdrawal request){
         return accountService.withdraw(request);
     }
 
     @PostMapping("/{accountNumber}/transfer")
-    public AccountResponse transfer(@PathVariable("accountNumber") String accountNumber, @RequestBody AccountTransfer accountTransfer){
+    public AccountResponse transfer(@PathVariable("accountNumber") String accountNumber, @RequestBody @Valid AccountTransfer accountTransfer){
         return accountService.transfer(accountTransfer);
     }
 

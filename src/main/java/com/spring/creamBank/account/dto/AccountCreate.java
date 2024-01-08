@@ -1,6 +1,7 @@
 package com.spring.creamBank.account.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.*;
 
 @ToString
@@ -12,6 +13,7 @@ public class AccountCreate {
     private String accountNumber;
     @NotBlank(message = "예금주명을 입력해주세요.")
     private String owner;
+    @Positive
     private Long balance;
 
     @Builder

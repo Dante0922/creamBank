@@ -96,7 +96,8 @@ class AccountControllerTest {
     }
 
     @Test
-    void createAccount() throws Exception {
+    @DisplayName("계좌생성 정상 테스트")
+    void createAccountV1() throws Exception {
         //given
         AccountCreate acc = AccountCreate.builder()
                 .accountNumber("0102311")
@@ -119,6 +120,28 @@ class AccountControllerTest {
         assertEquals("크림", account.getOwner());
         assertEquals(50000L, account.getBalance());
     }
+    @Test
+    @DisplayName("계좌생성 비정상 테스트")
+    void createAccountV2() throws Exception {
+        //given
+        AccountCreate acc = AccountCreate.builder()
+                .accountNumber("0102311")
+                .balance(50000L)
+                .build();
+
+        //when
+        String json = objectMapper.writeValueAsString(acc);
+
+        //then
+        mockMvc.perform(post("/accounts")
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("$.validation.owner").value("예금주명을 입력해주세요."));
+    }
 
     @Test
     void deposit() throws Exception{
@@ -135,7 +158,6 @@ class AccountControllerTest {
                 .owner("크림")
                 .depositAmount(5000000L)
                 .build();
-
         //when
         String json = objectMapper.writeValueAsString(deposit);
 
@@ -149,6 +171,39 @@ class AccountControllerTest {
         Account result = accountRepository.findById(acc.getId()).orElseThrow(AccountNotFound::new);
         assertEquals(5050000L, result.getBalance());
     }
+
+    @Test
+    @DisplayName("deposit 비정상 테스트")
+    void depositV2() throws Exception{
+        //given
+        Account acc = Account.builder()
+                .accountNumber("0102311")
+                .owner("크림")
+                .balance(50000L)
+                .build();
+        accountRepository.save(acc);
+
+        AccountDeposit deposit = AccountDeposit.builder()
+                .accountNumber("0102311")
+                .owner("크림")
+                .depositAmount(0L)
+                .build();
+        //when
+        String json = objectMapper.writeValueAsString(deposit);
+
+        mockMvc.perform(patch("/accounts/{accountNumber}/deposit", acc.getAccountNumber())
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("$.validation.depositAmount").value("must be greater than or equal to 1"));
+        //then
+        Account result = accountRepository.findById(acc.getId()).orElseThrow(AccountNotFound::new);
+        assertEquals(50000L, result.getBalance());
+    }
+
     @Test
     void withdrawal() throws Exception{
         //given
@@ -191,6 +246,38 @@ class AccountControllerTest {
     }
 
     @Test
+    @DisplayName("출금 비정상 테스트")
+    void withdrawalV2() throws Exception{
+        //given
+        Account acc = Account.builder()
+                .accountNumber("0102311")
+                .owner("크림")
+                .balance(50000L)
+                .build();
+        accountRepository.save(acc);
+
+        AccountWithdrawal withdrawal1 = AccountWithdrawal.builder()
+                .accountNumber("0102311")
+                .owner("크림")
+                .withdrawalAmount(-30000L)
+                .build();
+        //when
+        String json1 = objectMapper.writeValueAsString(withdrawal1);
+        //then
+        mockMvc.perform(patch("/accounts/{accountNumber}/withdrawal", acc.getAccountNumber())
+                        .contentType(APPLICATION_JSON)
+                        .content(json1))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("$.validation.withdrawalAmount").value("must be greater than or equal to 1"));
+
+        Account result = accountRepository.findById(acc.getId()).orElseThrow(AccountNotFound::new);
+        assertEquals(50000L, result.getBalance());
+    }
+
+    @Test
     void transfer() throws Exception{
         //given
         Account acc1 = Account.builder()
@@ -228,6 +315,48 @@ class AccountControllerTest {
 
         assertEquals(7000L, result1.getBalance());
         assertEquals(8000L, result2.getBalance());
+    }
 
+    @Test
+    @DisplayName("송금 비정상 테스트")
+    void transferV2() throws Exception{
+        //given
+        Account acc1 = Account.builder()
+                .accountNumber("0102311")
+                .owner("크림")
+                .balance(10000L)
+                .build();
+        Account acc2 = Account.builder()
+                .accountNumber("0109981")
+                .owner("햄스터")
+                .balance(5000L)
+                .build();
+        accountRepository.save(acc1);
+        accountRepository.save(acc2);
+
+        AccountTransfer transferDTO = AccountTransfer.builder()
+                .senderAccount(acc1.getAccountNumber())
+                .senderName(acc1.getOwner())
+                .recipientAccount(acc2.getAccountNumber())
+                .recipientName(acc2.getOwner())
+                .build();
+
+        String json = objectMapper.writeValueAsString(transferDTO);
+
+        //when
+        mockMvc.perform(post("/accounts/{accountNumber}/transfer", acc1.getAccountNumber())
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("잘못된 요청입니다."))
+                .andExpect(jsonPath("$.validation.transferAmount").value("must not be null"));
+        //then
+        Account result1 = accountRepository.findById(acc1.getId()).orElseThrow(AccountNotFound::new);
+        Account result2 = accountRepository.findById(acc2.getId()).orElseThrow(AccountNotFound::new);
+
+        assertEquals(10000L, result1.getBalance());
+        assertEquals(5000L, result2.getBalance());
     }
 }
